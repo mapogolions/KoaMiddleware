@@ -1,6 +1,6 @@
-using System;
 namespace Koa.Middleware.Tests
 {
+    using System;
     using System.Collections.Generic;
     using Xunit;
 
