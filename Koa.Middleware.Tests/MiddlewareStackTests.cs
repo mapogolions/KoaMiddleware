@@ -1,14 +1,13 @@
-using System;
-using Xunit;
-
 namespace Koa.Middleware.Tests
 {
-    public class UnitTest1
+    using Xunit;
+
+    public class MiddlewareStackTests
     {
         [Fact]
         public void Test1()
         {
-
+            Assert.True(true);
         }
     }
 }
