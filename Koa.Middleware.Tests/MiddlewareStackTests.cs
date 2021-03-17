@@ -1,10 +1,63 @@
 using System;
 namespace Koa.Middleware.Tests
 {
+    using System.Collections.Generic;
     using Xunit;
 
     public class MiddlewareStackTests
     {
+        [Fact]
+        public void ShouldExecStepByStep()
+        {
+            var context = new List<string>();
+            var stack = new MiddlewareStack<IList<string>>();
+            var fn = stack.Compose((_, next) =>
+            {
+                _.Add("first start");
+                next();
+                _.Add("first end");
+                return _;
+            },
+            (_, next) =>
+            {
+                _.Add("second start");
+                next();
+                _.Add("second end");
+                return _;
+            },
+            (_, next) =>
+            {
+                _.Add("middle");
+                return _;
+            });
+
+            var actual = fn(context);
+            var expected = new List<string>
+            {
+                "first start",
+                "second start",
+                "middle",
+                "second end",
+                "first end"
+            };
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void ShouldThrowExceptionWhenNextCalledMoreThanOnce()
+        {
+            var stack = new MiddlewareStack<string>();
+            var fn = stack.Compose((_, next) =>
+            {
+                next();
+                next();
+                return _;
+            });
+
+            Assert.Throws<InvalidOperationException>(() => fn(string.Empty));
+        }
+
         [Theory]
         [InlineData("", "")]
         [InlineData("foo", "FOO")]

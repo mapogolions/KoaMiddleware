@@ -16,8 +16,8 @@ namespace Koa.Middleware
                 TContext iter(int i)
                 {
                     if (index >= i) throw new InvalidOperationException("Next must be called only once");
+                    index = i; // should be here!!!
                     if (i == middleware.Length) return context;
-                    index = i;
                     var fn = middleware[i];
                     return fn(context, () => iter(i + 1));
                 }
