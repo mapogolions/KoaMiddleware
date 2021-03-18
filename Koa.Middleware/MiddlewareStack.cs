@@ -37,7 +37,6 @@ namespace Koa.Middleware
                 var index = -1;
                 Task<TContext> Iter(int i)
                 {
-
                     if (index >= i) throw new InvalidOperationException("Next must be called only once");
                     index = i; // should be here!!!
                     if (i == middleware.Length) return Task.FromResult<TContext>(context);
