@@ -2,7 +2,6 @@ namespace Koa.Middleware.Tests
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading.Tasks;
     using Xunit;
 
     public class MiddlewareStackComposeTests
