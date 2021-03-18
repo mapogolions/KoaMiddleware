@@ -1,3 +1,3 @@
-#### Koa Compose
+### Koa Middleware
 
-[Origin](https://github.com/koajs/compose)
+Based on the [koa-compose](https://github.com/koajs/compose) npm package
