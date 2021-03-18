@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-namespace Koa.Middleware
+﻿namespace Koa.Middleware
 {
     using System;
+    using System.Threading.Tasks;
 
     public interface IMiddlewareStack<TContext>
     {

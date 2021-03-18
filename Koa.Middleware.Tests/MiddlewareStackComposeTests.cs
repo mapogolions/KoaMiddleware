@@ -5,31 +5,8 @@ namespace Koa.Middleware.Tests
     using System.Threading.Tasks;
     using Xunit;
 
-    public class MiddlewareStackTests
+    public class MiddlewareStackComposeTests
     {
-        [Theory]
-        [InlineData("", "")]
-        [InlineData("foo", "FOO")]
-        [InlineData("B-a-r", "B_A_R")]
-        public async Task ComposeAsync(string input, string expected)
-        {
-            var stack = new MiddlewareStack<string>();
-            var fn = stack.ComposeAsync(
-                async (_, next) =>
-                {
-                    return (await next()).ToUpper();
-                },
-                async (_, next) =>
-                {
-                    await Task.Delay(TimeSpan.FromMilliseconds(200));
-                    return await Task.FromResult(_.Replace('-', '_'));
-                });
-
-            var actual = await fn(input);
-
-            Assert.Equal(expected, actual);
-        }
-
         [Fact]
         public void ShouldExecStepByStep()
         {
@@ -106,9 +83,9 @@ namespace Koa.Middleware.Tests
         }
 
         [Theory]
-        [InlineData(1)]
-        [InlineData(2)]
-        public void ShouldIncrementInputValue(int input)
+        [InlineData(1, 2)]
+        [InlineData(2, 3)]
+        public void ShouldIncrementInputValue(int input, int expected)
         {
             var stack = new MiddlewareStack<int>();
             var fn = stack.Compose((_, next) =>
@@ -116,7 +93,6 @@ namespace Koa.Middleware.Tests
                 return _ + 1;
             });
             var actual = fn(input);
-            var expected = input + 1;
 
             Assert.Equal(expected, actual);
         }
