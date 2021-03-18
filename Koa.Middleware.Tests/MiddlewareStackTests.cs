@@ -2,34 +2,59 @@ namespace Koa.Middleware.Tests
 {
     using System;
     using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Xunit;
 
     public class MiddlewareStackTests
     {
+        [Theory]
+        [InlineData("", "")]
+        [InlineData("foo", "FOO")]
+        [InlineData("B-a-r", "B_A_R")]
+        public async Task ComposeAsync(string input, string expected)
+        {
+            var stack = new MiddlewareStack<string>();
+            var fn = stack.ComposeAsync(
+                async (_, next) =>
+                {
+                    return (await next()).ToUpper();
+                },
+                async (_, next) =>
+                {
+                    await Task.Delay(TimeSpan.FromMilliseconds(200));
+                    return await Task.FromResult(_.Replace('-', '_'));
+                });
+
+            var actual = await fn(input);
+
+            Assert.Equal(expected, actual);
+        }
+
         [Fact]
         public void ShouldExecStepByStep()
         {
             var context = new List<string>();
             var stack = new MiddlewareStack<IList<string>>();
-            var fn = stack.Compose((_, next) =>
-            {
-                _.Add("first start");
-                next();
-                _.Add("first end");
-                return _;
-            },
-            (_, next) =>
-            {
-                _.Add("second start");
-                next();
-                _.Add("second end");
-                return _;
-            },
-            (_, next) =>
-            {
-                _.Add("middle");
-                return _;
-            });
+            var fn = stack.Compose(
+                (_, next) =>
+                {
+                    _.Add("first start");
+                    next();
+                    _.Add("first end");
+                    return _;
+                },
+                (_, next) =>
+                {
+                    _.Add("second start");
+                    next();
+                    _.Add("second end");
+                    return _;
+                },
+                (_, next) =>
+                {
+                    _.Add("middle");
+                    return _;
+                });
 
             var actual = fn(context);
             var expected = new List<string>
@@ -65,15 +90,15 @@ namespace Koa.Middleware.Tests
         public void ShoulBeAbleCallNext(string input, string expected)
         {
             var stack = new MiddlewareStack<string>();
-            var fn = stack.Compose((_, next) =>
-            {
-                return next().ToUpper();
-            },
-            (_, next) =>
-            {
-                return _.Replace('-', '_');;
-            }
-            );
+            var fn = stack.Compose(
+                (_, next) =>
+                {
+                    return next().ToUpper();
+                },
+                (_, next) =>
+                {
+                    return _.Replace('-', '_');;
+                });
 
             var actual = fn(input);
 
